@@ -16,10 +16,10 @@ get '/homejs' => sub {
 };
 
 get '/get/grades' => sub {
-    my $self = shift;
+    my $self         = shift;
     my $work_sheet;
-    my $user = Homework::Help->new;
-    my @response = $user->get_assignments;
+    my $user         = Homework::Help->new;
+    my @response     = $user->get_assignments;
     foreach my $attribute ( @response ) {
         $work_sheet .= $attribute;
     }
@@ -40,10 +40,10 @@ get '/submit/assignment' => sub {
 };
 
 get '/get/grade' => sub {
-    my $self = shift;
+    my $self           = shift;
     my $total_points;
-    my $user = Homework::Help->new;
-    my @two_points = $user->get_grade;
+    my $user           = Homework::Help->new;
+    my @two_points     = $user->get_grade;
     foreach my $points ( @two_points ) {
         $total_points .= $points;
     }
