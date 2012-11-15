@@ -1,6 +1,18 @@
 ______________
-README
+
+README (0.1)
 ______________
 
 Keep track of your grades with Perl!
 ____________________________________
+
+PLANS FOR A BETTER TOMORROW (0.2)
+____________________________________
+
+    -> individual assignment grades                     [DONE]
+    -> different types of assignments (test, quiz, etc) [DONE]
+    -> 3d graph of the assignment types
+    -> suggestions as to where to improve on
+    -> multiple class tables
+    -> link suggestions
+    -> user accounts
