@@ -291,8 +291,6 @@ jQuery(document).ready(function() {
 
     <div class="container-fluid">
       <div class="row-fluid">
-        <div class="span3">
-        </div><!--/span-->
         <div class="span9">
           <div class="hero-unit">
             <h1>Easy Grade Tracker</h1>
@@ -302,14 +300,14 @@ jQuery(document).ready(function() {
             <div class="span4">
               <h2>Submit An Assignment</h2>
                 Assignment: <input id="assignment" type="text"></input></br>
-                Type: <select id="type">
+                Type: </br><select id="type">
                     <option id="test" value="test">Test</option>
                     <option id="quiz" value="quiz">Quiz</option>
                     <option id="homework" value="homework">Homework</option>
                     <option id="project" value="project">Project</option>
                     <option id="extra_credit" value="extra credit">Extra Credit</option>
                 </select></br>
-                Date: <input id="date" type="text"></input></br>
+                Date: </br><input id="date" type="text"></input></br>
                 Points Earned: <input id="earned" type="text"></input></br>
                 Points Possible: <input id="possible" type="text"></input></br>
                 <button id="submit_assignment" type="button">Submit Assignment</button>
@@ -325,7 +323,7 @@ jQuery(document).ready(function() {
                     </tr>
                 </table></br>
                 <input id="grade" type="text" value="0"></input>
-                <div style="position: absolute;left: 850px;top: 1000px">
+                <div style="position: absolute;left: 450px;top: 750px">
                     <h3>key</h3>
                     <p>0 - TESTS</p>
                     <p>1 - HOMEWORK</p>
