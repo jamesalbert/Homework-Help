@@ -76,7 +76,6 @@ sub get_grade {
 
 sub get_graph {
     my $self = shift;
-    use GD::Graph::bars3d;
     my (
         @amount_of_tests,
         @amount_of_homeworks,
@@ -90,7 +89,14 @@ sub get_graph {
         $total_quiz_points,
         $total_project_points,
         $total_extra_points
-    ) = 1;
+    ) = 0;
+    my (
+        $overall_test_grade,
+        $overall_homework_grade,
+        $overall_quiz_grade,
+        $overall_project_grade,
+        $overall_extra_grade
+    );
     my $dbh = DBI->connect(
         'dbi:SQLite:dbname=schooldb'
     );
@@ -134,26 +140,43 @@ sub get_graph {
         push @amount_of_extras, "$extra->{earned}...$extra->{possible}";
         $total_extra_points += $extra->{earned} / $extra->{possible};
     }
-    my $overall_test_grade = $total_test_points - 1 / scalar @amount_of_tests if $total_test_points ne 0;
-    my $overall_homework_grade = $total_homework_points - 1 / scalar @amount_of_homeworks if $total_homework_points ne 0;
-    my $overall_quiz_grade = $total_quiz_points - 1 / scalar @amount_of_quizes if $total_quiz_points ne 0;
-    my $overall_project_grade = $total_project_points - 1 / scalar @amount_of_projects if $total_project_points ne 0;
-    my $overall_extra_grade = $total_extra_points - 1 / scalar @amount_of_extras if $total_extra_points ne 0;
-    my @data = (
-        ["tests $overall_test_grade", "homework $overall_homework_grade", "quizes $overall_quiz_grade", "projects $overall_project_grade", "extra credit $overall_extra_grade"],
-        [$overall_test_grade, $overall_homework_grade, $overall_quiz_grade, $overall_project_grade, $overall_extra_grade]
-        #[100, 200, 300, 400, 500]
-    );
-    my $graph = GD::Graph::bars3d->new(800, 600);
-    $graph->set(
-        x_label => "Assignment Types",
-        y_label => "Percentile Range",
-        title   => "How Good You're Doing In Different Respects",
-    );
-    my $gd = $graph->plot( \@data );
-    open(IMG, '>public/graph.png') or die $!;
-    binmode IMG;
-    print IMG $gd->png;
+    if ($total_test_points != 0) {
+        $overall_test_grade = $total_test_points / scalar @amount_of_tests;# if $total_test_points != 0;
+    }
+    else {
+        $overall_test_grade = 0;
+    }
+    if ($total_homework_points != 0) {
+        $overall_homework_grade = $total_homework_points / scalar @amount_of_homeworks;
+    }
+    else {
+        $overall_homework_grade = 0;
+    }
+    if ($total_quiz_points != 0) {
+        $overall_quiz_grade = $total_quiz_points / scalar @amount_of_quizes;
+    }
+    else {
+        $overall_quiz_grade = 0;
+    }
+    if ($total_project_points != 0) {
+        $overall_project_grade = $total_project_points / scalar @amount_of_projects;
+    }
+    else {
+        $overall_project_grade = 0;
+    }
+    if ($total_extra_points != 0) {
+        $overall_extra_grade = $total_extra_points / scalar @amount_of_extras;
+    }
+    else {
+        $overall_extra_grade = 0;
+    }
+    my @grade_array;
+    push @grade_array, $overall_test_grade;
+    push @grade_array, $overall_homework_grade;
+    push @grade_array, $overall_quiz_grade;
+    push @grade_array, $overall_project_grade;
+    push @grade_array, $overall_extra_grade;
+    return @grade_array;
 }
 
 1;
