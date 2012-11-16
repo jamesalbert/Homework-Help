@@ -48,6 +48,19 @@ sub submit_assignment {
     return $self;
 }
 
+sub clear_table {
+    my $self = shift;
+    my $dbh = DBI->connect(
+        'dbi:SQLite:dbname=schooldb'
+    );
+    my $sth = $dbh->prepare(
+        "delete from assignments;"
+    );
+    $sth->execute;
+    $dbh->disconnect;
+    return "table destroyed";
+}
+
 sub get_grade {
     my $self = shift;
     my $total_points;

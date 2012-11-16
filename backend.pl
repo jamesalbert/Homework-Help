@@ -74,66 +74,16 @@ get '/learnmore' => sub {
     $self->render( 'learnmore' );
 };
 
+get '/clear/table' => sub {
+    my $self     = shift;
+    my $user     = Homework::Help->new;
+    my $response = $user->clear_table;
+    $self->render( text => $response );
+};
+
 app->start;
 
 __DATA__
-
-@@ test.html.ep
-
-<body>
-
-<img src="/graph.png" width="400" height="300"></img>
-
-</body>
-
-@@ home.html.ep
-
-<!DOCTYPE html>
-<html>
-<head>
-
-<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
-<script src="/homejs"></script>
-
-</head>
-<body>
-<style>
-input {position: absolute;left: 175px}
-select {position: absolute; left: 177px; width: 173px}
-img {position: absolute; left: 750px}
-</style>
-<h4>Grade Checker</h4>
-
-<img src="/graph.png" width="550" height="400"></img>
-
-Assignment: <input id="assignment" type="text"></input></br>
-Type: <select id="type">
-    <option id="test" value="test">Test</option>
-    <option id="quiz" value="quiz">Quiz</option>
-    <option id="homework" value="homework">Homework</option>
-    <option id="project" value="project">Project</option>
-    <option id="extra_credit" value="extra credit">Extra Credit</option>
-</select></br>
-Date: <input id="date" type="text"></input></br>
-Points Earned: <input id="earned" type="text"></input></br>
-Points Possible: <input id="possible" type="text"></input></br>
-<button id="submit_assignment" type="button">Submit Assignment</button>
-
-<table id="grade_sheet" border="1">
-<tr>
-<th>ASSIGNMENT</th>
-<th>TYPE</th>
-<th>DATE</th>
-<th>POINTS EARNED</th>
-<th>POINTS POSSIBLE</th>
-<th>GRADE</th>
-</tr>
-</table></br>
-
-<input id="grade" type="text" value="0"></input>
-
-</body>
-</html>
 
 @@ homejs.html.ep
 
@@ -220,9 +170,16 @@ jQuery(document).ready(function() {
         var plotter = new PlotKit.SweetCanvasRenderer(canvas, layout, {});
         plotter.render();
     });
+    jQuery('#clear_table').click(function() {
+        jQuery.get('http://localhost:3000/clear/table',
+        function(response) {
+            alert(response);
+            window.location.reload();
+        });
+    });
 });
 
-@@ slickred.html.ep
+@@ home.html.ep
 
 <!DOCTYPE html>
 <html lang="en">
@@ -309,6 +266,7 @@ jQuery(document).ready(function() {
                 Points Earned: <input id="earned" type="text"></input></br>
                 Points Possible: <input id="possible" type="text"></input></br>
                 <button id="submit_assignment" type="button">Submit Assignment</button>
+                <button id="clear_table" type="button">Clear Grade Sheet</button>
                 <table id="grade_sheet" border="1">
                     <tr>
                         <th>ASSIGNMENT</th>
@@ -320,7 +278,7 @@ jQuery(document).ready(function() {
                     </tr>
                 </table></br>
                 <input id="grade" type="text" value="0"></input>
-                <div style="position: absolute;left: 650px;top: 1000px">
+                <div style="position: absolute;left: 850px;top: 1000px">
                     <h3>key</h3>
                     <p>0 - TESTS</p>
                     <p>1 - HOMEWORK</p>
