@@ -90,6 +90,11 @@ get '/signin' => sub {
     $self->render( text => $response );
 };
 
+get '/contact' => sub {
+    my $self = shift;
+    $self->render( text => 'James Albert <james.albert72@gmail.com>' );
+};
+
 app->start;
 
 __DATA__
@@ -274,7 +279,7 @@ jQuery(document).ready(function() {
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">MojoVicious Grade Pro</a>
+          <a class="brand" href="/home">MojoVicious Grade Pro</a>
           <div class="nav-collapse collapse">
             <p class="navbar-text pull-right">
               Logged in as <a href="#" id="user_disp" class="navbar-link">Username</a>
@@ -282,7 +287,7 @@ jQuery(document).ready(function() {
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
               <li id="sign_in"><a href="#">Sign-In</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a href="mailto:james.albert72@gmail.com" target="_blank">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -311,7 +316,8 @@ jQuery(document).ready(function() {
                 Points Earned: <input id="earned" type="text"></input></br>
                 Points Possible: <input id="possible" type="text"></input></br>
                 <button id="submit_assignment" type="button">Submit Assignment</button>
-                <button id="clear_table" type="button">Clear Grade Sheet</button>
+                <button id="clear_table" type="button">Clear Grade Sheet</button></br>
+                </br>
                 <table id="grade_sheet" border="1">
                     <tr>
                         <th>ASSIGNMENT</th>
@@ -323,7 +329,7 @@ jQuery(document).ready(function() {
                     </tr>
                 </table></br>
                 <input id="grade" type="text" value="0"></input>
-                <div style="position: absolute;left: 450px;top: 750px">
+                <div>
                     <h3>key</h3>
                     <p>0 - TESTS</p>
                     <p>1 - HOMEWORK</p>
