@@ -61,6 +61,26 @@ sub clear_table {
     return "table destroyed";
 }
 
+sub sign_in {
+    my ( $self, $username, $password ) = @_;
+    my $dbh = DBI->connect(
+        'dbi:SQLite:dbname=schooldb'
+    );
+    my $usr_and_pass = $dbh->selectall_arrayref(
+        "select user, pass
+            from profiles where user=\"$username\" and pass=\"$password\";",
+        { Slice => {} }
+    );
+    foreach my $check (@{$usr_and_pass}) {
+        if ( $username eq $check->{user} and $password eq $check->{pass} ) {
+            return $username;
+        }
+        else {
+            return 'false';
+        }
+    }
+}
+
 sub get_grade {
     my $self = shift;
     my $total_points;

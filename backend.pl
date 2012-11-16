@@ -81,6 +81,15 @@ get '/clear/table' => sub {
     $self->render( text => $response );
 };
 
+get '/signin' => sub {
+    my $self     = shift;
+    my $username = $self->param( 'username' );
+    my $password = $self->param( 'password' );
+    my $user     = Homework::Help->new;
+    my $response = $user->sign_in( $username, $password );
+    $self->render( text => $response );
+};
+
 app->start;
 
 __DATA__
@@ -168,27 +177,27 @@ jQuery(document).ready(function() {
         layout.evaluate();
         var canvas = MochiKit.DOM.getElement("graph");
         var plotter = new PlotKit.SweetCanvasRenderer(canvas, layout, {});
-        if (grade[0] < .75) {
+        if (grade[0] < .75 && grade[0] != 0) {
             jQuery('#tips').append(
                 '<p>you need to work on your tests. try to study more.</p></br>'
             );
         };
-        if (grade[1] < .75) {
+        if (grade[1] < .75 && grade[1] != 0) {
             jQuery('#tips').append(
                 '<p>you need to work on your homework. try to get into a routine.</p></br>'
             );
         };
-        if (grade[2] < .75) {
+        if (grade[2] < .75 && grade[2] != 0) {
             jQuery('#tips').append(
                 '<p>you need to work on your quizes. be ready for any pop quizes.</p></br>'
             );
         };
-        if (grade[3] < .75) {
+        if (grade[3] < .75 && grade[3] != 0) {
             jQuery('#tips').append(
                 '<p>you need to work on your projects. take your time.</p></br>'
             );
         };
-        if (grade[4] < .75) {
+        if (grade[4] < .75 && grade[4] != 0) {
             jQuery('#tips').append(
                 '<p>How can you mess up on extra credit??!!</p></br>'
             );
@@ -202,6 +211,19 @@ jQuery(document).ready(function() {
             window.location.reload();
         });
     });
+    jQuery('#sign_in').click(function() {
+        var username = prompt('Username');
+        var password = prompt('Password');
+        jQuery.get('http://localhost:3000/signin?username='+username+'&password='+password,
+        function(response) {
+            if ( response != 'false' ) {
+                jQuery('#user_disp').val(response);
+            }
+            else {
+                jQuery('$user_disp').val('NOBODY');
+            }
+        });
+    });
 });
 
 @@ home.html.ep
@@ -210,7 +232,7 @@ jQuery(document).ready(function() {
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Bootstrap, from Twitter</title>
+    <title>MojoVicious</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -255,11 +277,11 @@ jQuery(document).ready(function() {
           <a class="brand" href="#">MojoVicious Grade Pro</a>
           <div class="nav-collapse collapse">
             <p class="navbar-text pull-right">
-              Logged in as <a href="#" class="navbar-link">Username</a>
+              Logged in as <a href="#" id="user_disp" class="navbar-link">Username</a>
             </p>
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
+              <li id="sign_in"><a href="#">Sign-In</a></li>
               <li><a href="#contact">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
