@@ -168,6 +168,31 @@ jQuery(document).ready(function() {
         layout.evaluate();
         var canvas = MochiKit.DOM.getElement("graph");
         var plotter = new PlotKit.SweetCanvasRenderer(canvas, layout, {});
+        if (grade[0] < .75) {
+            jQuery('#tips').append(
+                '<p>you need to work on your tests. try to study more.</p></br>'
+            );
+        };
+        if (grade[1] < .75) {
+            jQuery('#tips').append(
+                '<p>you need to work on your homework. try to get into a routine.</p></br>'
+            );
+        };
+        if (grade[2] < .75) {
+            jQuery('#tips').append(
+                '<p>you need to work on your quizes. be ready for any pop quizes.</p></br>'
+            );
+        };
+        if (grade[3] < .75) {
+            jQuery('#tips').append(
+                '<p>you need to work on your projects. take your time.</p></br>'
+            );
+        };
+        if (grade[4] < .75) {
+            jQuery('#tips').append(
+                '<p>How can you mess up on extra credit??!!</p></br>'
+            );
+        };
         plotter.render();
     });
     jQuery('#clear_table').click(function() {
@@ -287,6 +312,7 @@ jQuery(document).ready(function() {
                     <p>4 - EXTRA CREDIT</p>
                 </div>
                 <div><canvas id="graph" height="300" width="300"></canvas></div>
+                <div id="tips"></div>
             </div><!--/span-->
           </div><!--/row-->
         </div><!--/span-->
