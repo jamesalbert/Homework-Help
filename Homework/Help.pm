@@ -195,16 +195,6 @@ sub get_grade {
         $total_weighted_grade += $weighted_extra_grade;
     }
 
-
-#    my @split_grades = split(/\[NEWITEM\]/, $total_points);
-#    my @grade_pair;
-#    my $overall_points = 0;
-#    my $iterations = scalar @split_grades;
-#    for (my $i = 0;$i < $iterations;$i++) {
-#        @grade_pair = split(/\[ITEMBREAK\]/, $split_grades[$i]);
-#        $overall_points += ($grade_pair[0]/$grade_pair[1]);
-#    }
-#    my $grade = $overall_points / $iterations;
     return $total_weighted_grade;
 }
 
@@ -317,11 +307,11 @@ sub get_graph {
         $overall_extra_grade = 0;
     }
     my @grade_array;
-    push @grade_array, $weighted_test_grade;
-    push @grade_array, $weighted_homework_grade;
-    push @grade_array, $weighted_quiz_grade;
-    push @grade_array, $weighted_project_grade;
-    push @grade_array, $weighted_extra_grade;
+    push @grade_array, $overall_test_grade;
+    push @grade_array, $overall_homework_grade;
+    push @grade_array, $overall_quiz_grade;
+    push @grade_array, $overall_project_grade;
+    push @grade_array, $overall_extra_grade;
     return @grade_array;
 }
 
