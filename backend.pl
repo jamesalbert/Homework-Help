@@ -209,6 +209,8 @@ jQuery(document).ready(function() {
         };
         plotter.render();
     });
+    var username = jQuery.cookie("username");
+    jQuery('h1').append(username);
     jQuery('#clear_table').click(function() {
         jQuery.get('http://localhost:3000/clear/table',
         function(response) {
@@ -221,11 +223,13 @@ jQuery(document).ready(function() {
         var password = prompt('Password');
         jQuery.get('http://localhost:3000/signin?username='+username+'&password='+password,
         function(response) {
-            if ( response != 'false' ) {
-                jQuery('#user_disp').val(response);
+            if ( response != '' ) {
+                jQuery.cookie("username", response);
+                window.location.reload();
             }
             else {
-                jQuery('$user_disp').val('NOBODY');
+                jQuery.cookie("username", null);
+                window.location.reload();
             }
         });
     });
@@ -298,7 +302,7 @@ jQuery(document).ready(function() {
       <div class="row-fluid">
         <div class="span9">
           <div class="hero-unit">
-            <h1>Easy Grade Tracker</h1>
+            <h1>Welcome </h1>
             <p>a simple grade checker written in PERL created to prevent any late semester surprises.</p>
           </div>
           <div class="row-fluid">
@@ -356,6 +360,7 @@ jQuery(document).ready(function() {
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script src="https://raw.github.com/carhartl/jquery-cookie/master/jquery.cookie.js"></script>
     <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/MochiKit-1.4.2/lib/MochiKit/MochiKit.js"></script>
     <script type="text/javascript" src="/plotkit-0.9.1/PlotKit/Base.js"></script>
