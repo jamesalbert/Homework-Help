@@ -15,7 +15,7 @@ get '/homejs' => sub {
     $self->render( 'homejs' );
 };
 
-get '/get/grades' => sub {
+get '/get/assignments' => sub {
     my $self         = shift;
     my $work_sheet;
     my $user         = Homework::Help->new;
@@ -44,11 +44,11 @@ get '/get/grade' => sub {
     my $self           = shift;
     my $total_points;
     my $user           = Homework::Help->new;
-    my @two_points     = $user->get_grade;
-    foreach my $points ( @two_points ) {
-        $total_points .= $points;
-    }
-    $self->render( text => $total_points );
+    my $grade          = $user->get_grade;
+    #foreach my $points ( @two_points ) {
+    #    $total_points .= $points;
+    #}
+    $self->render( text => $grade );
 };
 
 get '/get/graph' => sub {
@@ -102,7 +102,7 @@ __DATA__
 @@ homejs.html.ep
 
 jQuery(document).ready(function() {
-    jQuery.get('http://localhost:3000/get/grades',
+    jQuery.get('http://localhost:3000/get/assignments',
     function(assignments) {
         var record = assignments.split('[NEWITEM]');
         var list_length = record.length;
@@ -182,27 +182,27 @@ jQuery(document).ready(function() {
         layout.evaluate();
         var canvas = MochiKit.DOM.getElement("graph");
         var plotter = new PlotKit.SweetCanvasRenderer(canvas, layout, {});
-        if (grade[0] < .75 && grade[0] != 0) {
+        if (grade[0] < .225 && grade[0] != 0) {
             jQuery('#tips').append(
                 '<p>you need to work on your tests. try to study more.</p></br>'
             );
         };
-        if (grade[1] < .75 && grade[1] != 0) {
+        if (grade[1] < .075 && grade[1] != 0) {
             jQuery('#tips').append(
                 '<p>you need to work on your homework. try to get into a routine.</p></br>'
             );
         };
-        if (grade[2] < .75 && grade[2] != 0) {
+        if (grade[2] < .15 && grade[2] != 0) {
             jQuery('#tips').append(
                 '<p>you need to work on your quizes. be ready for any pop quizes.</p></br>'
             );
         };
-        if (grade[3] < .75 && grade[3] != 0) {
+        if (grade[3] < .225 && grade[3] != 0) {
             jQuery('#tips').append(
                 '<p>you need to work on your projects. take your time.</p></br>'
             );
         };
-        if (grade[4] < .75 && grade[4] != 0) {
+        if (grade[4] < .075 && grade[4] != 0) {
             jQuery('#tips').append(
                 '<p>How can you mess up on extra credit??!!</p></br>'
             );
