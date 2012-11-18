@@ -45,9 +45,6 @@ get '/get/grade' => sub {
     my $total_points;
     my $user           = Homework::Help->new;
     my $grade          = $user->get_grade;
-    #foreach my $points ( @two_points ) {
-    #    $total_points .= $points;
-    #}
     $self->render( text => $grade );
 };
 
@@ -102,6 +99,7 @@ __DATA__
 @@ homejs.html.ep
 
 jQuery(document).ready(function() {
+    jQuery('#add_assignment').focus();
     jQuery.get('http://localhost:3000/get/assignments',
     function(assignments) {
         var record = assignments.split('[NEWITEM]');
@@ -233,6 +231,48 @@ jQuery(document).ready(function() {
             }
         });
     });
+    jQuery(function() {
+        var assignment = jQuery( "#assignment" ),
+            type = jQuery( "#type" ),
+            date = jQuery( "#date" ),
+            earned = jQuery( "#earned" ),
+            possible = jQuery( "#possible" ),
+            allFields = jQuery( [] )
+                .add( assignment )
+                .add( type )
+                .add( date )
+                .add( earned )
+                .add( possible ),
+            tips = jQuery( ".validateTips" );
+
+        jQuery( "#dialog-form" ).dialog({
+            autoOpen: false,
+            resizable: false,
+            modal: true,
+            buttons: {
+                "Submit Assignment": function() {
+                    var assignment = jQuery('#assignment').val();
+                    var type = jQuery('#type').val();
+                    var date = jQuery('#date').val();
+                    var earned = jQuery('#earned').val();
+                    var possible = jQuery('#possible').val();
+                    if ( assignment != '' && type != '' && date != '' && earned != '' && possible != '' ) {
+                        jQuery.get('http://localhost:3000/submit/assignment?a='+assignment+'&t='+type+'&d='+date+'&e='+earned+'&p='+possible,
+                        function(status) {
+                            window.location.reload();
+                        });
+                    }
+                    else {
+                        alert('Wrong or no data given');
+                    }
+                    jQuery( this ).dialog( "close" );
+                }
+            }
+        });
+    });
+    jQuery('#add_assignment').click(function() {
+        jQuery('#dialog-form').dialog('open');
+    });
 });
 
 @@ home.html.ep
@@ -275,6 +315,31 @@ jQuery(document).ready(function() {
 
   <body>
 
+    <div id="dialog-form" title="Create new user">
+        <p class="validateTips">All form fields are required.</p>
+
+        <form>
+        <fieldset>
+            <label for="assignment">Assignment</label>
+            <input type="text" name="assignment" id="assignment" class="text ui-widget-content ui-corner-all" />
+            <label for="type">Type</label>
+            <select name="type" id="type" value="" class="text ui-widget-content ui-corner-all">
+                <option id="test" value="test">Test</option>
+                <option id="homework" value="homework">Homework</option>
+                <option id="quiz" value="quiz">Quiz</option>
+                <option id="project" value="project">Project</option>
+                <option id="extra credit" value="extra credit">Extra Credit</option>
+            </select>
+            <label for="date">Date</label>
+            <input type="text" name="date" id="date" value="" class="text ui-widget-content ui-corner-all" />
+            <label for="earned">Earned</label>
+            <input type="text" name="earned" id="earned" value="" class="text ui-widget-content ui-corner-all" />
+            <label for="possible">possible</label>
+            <input type="text" name="possible" id="possible" value="" class="text ui-widget-content ui-corner-all" />
+        </fieldset>
+        </form>
+    </div>
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -303,23 +368,12 @@ jQuery(document).ready(function() {
         <div class="span9">
           <div class="hero-unit">
             <h1>Welcome </h1>
-            <p>a simple grade checker written in PERL created to prevent any late semester surprises.</p>
+            <p>to a simple grade checker written in perl created to prevent any late semester surprises.</p>
           </div>
           <div class="row-fluid">
             <div class="span4">
               <h2>Submit An Assignment</h2>
-                Assignment: <input id="assignment" type="text"></input></br>
-                Type: </br><select id="type">
-                    <option id="test" value="test">Test</option>
-                    <option id="quiz" value="quiz">Quiz</option>
-                    <option id="homework" value="homework">Homework</option>
-                    <option id="project" value="project">Project</option>
-                    <option id="extra_credit" value="extra credit">Extra Credit</option>
-                </select></br>
-                Date: </br><input id="date" type="text"></input></br>
-                Points Earned: <input id="earned" type="text"></input></br>
-                Points Possible: <input id="possible" type="text"></input></br>
-                <button id="submit_assignment" type="button">Submit Assignment</button>
+                <button id="add_assignment" type="button">Add Assignment</button>
                 <button id="clear_table" type="button">Clear Grade Sheet</button></br>
                 </br>
                 <table id="grade_sheet" border="1">
@@ -359,7 +413,9 @@ jQuery(document).ready(function() {
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />
     <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
     <script src="https://raw.github.com/carhartl/jquery-cookie/master/jquery.cookie.js"></script>
     <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/MochiKit-1.4.2/lib/MochiKit/MochiKit.js"></script>
@@ -368,5 +424,6 @@ jQuery(document).ready(function() {
     <script type="text/javascript" src="/plotkit-0.9.1/PlotKit/Canvas.js"></script>
     <script type="text/javascript" src="/plotkit-0.9.1/PlotKit/SweetCanvas.js"></script>
     <script src="/homejs"></script>
+    <!--<link rel="stylesheet" href="/resources/demos/style.css" />-->
   </body>
 </html>

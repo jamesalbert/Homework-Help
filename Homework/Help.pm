@@ -145,53 +145,78 @@ sub get_grade {
         }
     }
     if ( $total_test_points ne 0 ) {
-        $overall_test_grade = $total_test_points / scalar @tests;
+        if ( scalar @tests != 0 ) {
+            $overall_test_grade = $total_test_points / scalar @tests;
+        }
+        else {
+            $overall_test_grade = 1;
+        }
         $weighted_test_grade = $overall_test_grade * .3;
         $total_weighted_grade += $weighted_test_grade;
     }
     else {
-        $overall_test_grade = 0;
+        $overall_test_grade = .3;
         $total_weighted_grade += $weighted_test_grade;
 
     }
 
     if ( $total_homework_points ne 0 ) {
-        $overall_homework_grade = $total_homework_points / scalar @homeworks;
+        if ( scalar @homeworks != 0 ) {
+            $overall_homework_grade = $total_homework_points / scalar @homeworks;
+        }
+        else {
+            $overall_homework_grade = 1;
+        }
         $weighted_homework_grade = $overall_homework_grade * .1;
         $total_weighted_grade += $weighted_homework_grade;
     }
     else {
-        $overall_homework_grade = 0;
+        $overall_homework_grade = .1;
         $total_weighted_grade += $weighted_homework_grade;
     }
 
     if ( $total_quiz_points ne 0 ) {
-        $overall_quiz_grade = $total_quiz_points / scalar @quizes;
+        if ( scalar @quizes != 0 ) {
+            $overall_quiz_grade = $total_quiz_points / scalar @quizes;
+        }
+        else {
+            $overall_quiz_grade = 1;
+        }
         $weighted_quiz_grade = $overall_quiz_grade * .2;
         $total_weighted_grade += $weighted_quiz_grade;
     }
     else {
-        $overall_quiz_grade = 0;
+        $overall_quiz_grade = .2;
         $total_weighted_grade += $weighted_quiz_grade;
     }
 
     if ( $total_project_points ne 0 ) {
-        $overall_project_grade = $total_project_points / scalar @projects;
+        if ( scalar @projects != 0 ) {
+            $overall_project_grade = $total_project_points / scalar @projects;
+        }
+        else {
+            $overall_project_grade = 1;
+        }
         $weighted_project_grade = $overall_project_grade * .3;
         $total_weighted_grade += $weighted_project_grade;
     }
     else {
-        $overall_project_grade = 0;
+        $overall_project_grade = .3;
         $total_weighted_grade += $weighted_project_grade;
     }
 
     if ( $total_extra_points ne 0 ) {
-        $overall_extra_grade = $total_extra_points / scalar @extras;
+        if ( scalar @extras != 0 ) {
+            $overall_extra_grade = $total_extra_points / scalar @extras;
+        }
+        else {
+            $overall_extra_grade = 1;
+        }
         $weighted_extra_grade = $overall_extra_grade * .1;
         $total_weighted_grade += $weighted_extra_grade;
     }
     else {
-        $overall_extra_grade = 0;
+        $overall_extra_grade = .1;
         $total_weighted_grade += $weighted_extra_grade;
     }
 
