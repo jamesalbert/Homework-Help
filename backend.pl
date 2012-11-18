@@ -186,12 +186,12 @@ jQuery(document).ready(function() {
                 '<p>you need to work on your tests. try to study more.</p></br>'
             );
         };
-        if (grade[1] < .075 && grade[1] != 0) {
+        if (grade[1] < .225 && grade[1] != 0) {
             jQuery('#tips').append(
                 '<p>you need to work on your homework. try to get into a routine.</p></br>'
             );
         };
-        if (grade[2] < .15 && grade[2] != 0) {
+        if (grade[2] < .225 && grade[2] != 0) {
             jQuery('#tips').append(
                 '<p>you need to work on your quizes. be ready for any pop quizes.</p></br>'
             );
@@ -201,7 +201,7 @@ jQuery(document).ready(function() {
                 '<p>you need to work on your projects. take your time.</p></br>'
             );
         };
-        if (grade[4] < .075 && grade[4] != 0) {
+        if (grade[4] < .225 && grade[4] != 0) {
             jQuery('#tips').append(
                 '<p>How can you mess up on extra credit??!!</p></br>'
             );
@@ -316,7 +316,7 @@ jQuery(document).ready(function() {
 
   <body>
 
-    <div id="dialog-form" title="Create new user">
+    <div id="dialog-form" title="Submit an Assignment">
         <p class="validateTips">All form fields are required.</p>
 
         <form>
@@ -368,7 +368,7 @@ jQuery(document).ready(function() {
       <div class="row-fluid">
         <div class="span9">
           <div class="hero-unit">
-            <h1>Welcome </h1>
+            <h1>Welcome User</h1>
             <p>to a simple grade checker written in perl created to prevent any late semester surprises.</p>
           </div>
           <div class="row-fluid">
@@ -388,16 +388,15 @@ jQuery(document).ready(function() {
                     </tr>
                 </table></br>
                 <input id="grade" type="text" value="0"></input>
-                <div>
-                    <h3>key</h3>
+                <div style="position: absolute; left: 600px; top: 325px">
+                    <h2>key</h2>
                     <p>0 - TESTS</p>
                     <p>1 - HOMEWORK</p>
                     <p>2 - QUIZES</p>
                     <p>3 - PROJECTS</p>
                     <p>4 - EXTRA CREDIT</p>
                 </div>
-                <div><canvas id="graph" height="300" width="300"></canvas></div>
-                <div id="tips"></div>
+                <div id="tips" style="position: absolute;left: 550px;top: -35px"><canvas id="graph" height="300" width="300"></canvas></div>
             </div><!--/span-->
           </div><!--/row-->
         </div><!--/span-->
