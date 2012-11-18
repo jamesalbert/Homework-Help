@@ -134,10 +134,10 @@ jQuery(document).ready(function() {
     jQuery.get('/get/grade',
     function(response) {
         var grade;
-        if (response > 1) {
+        if (response > 1.00) {
             grade = "A++";
         }
-        else if (response >= .90 && response <= 1) {
+        else if (response >= .90 && response <= 1.00) {
             grade = "A";
         }
         else if (response >= .80 && response < .90) {
@@ -152,7 +152,7 @@ jQuery(document).ready(function() {
         else {
             grade = "F";
         }
-        jQuery('#grade').val(grade+' '+response)
+        jQuery('#grade').val(grade+' '+response+'%')
             .attr('disabled', 'disabled');
     });
     jQuery('#submit_assignment').click(function() {
