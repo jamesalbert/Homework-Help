@@ -7,6 +7,7 @@ use Homework::Help;
 
 get '/home' => sub {
     my $self = shift;
+    $self->url_for('http://grade.com');
     $self->render( 'home' );
 };
 
@@ -100,7 +101,7 @@ __DATA__
 
 jQuery(document).ready(function() {
     jQuery('#add_assignment').focus();
-    jQuery.get('http://localhost:3000/get/assignments',
+    jQuery.get('/get/assignments',
     function(assignments) {
         var record = assignments.split('[NEWITEM]');
         var list_length = record.length;
@@ -130,7 +131,7 @@ jQuery(document).ready(function() {
             );
         }
     });
-    jQuery.get('http://localhost:3000/get/grade',
+    jQuery.get('/get/grade',
     function(response) {
         var grade;
         if (response > 1) {
@@ -161,7 +162,7 @@ jQuery(document).ready(function() {
         var earned = jQuery('#earned').val();
         var possible = jQuery('#possible').val();
         if ( assignment != '' && type != '' && date != '' && earned != '' && possible != '' ) {
-            jQuery.get('http://localhost:3000/submit/assignment?a='+assignment+'&t='+type+'&d='+date+'&e='+earned+'&p='+possible,
+            jQuery.get('/submit/assignment?a='+assignment+'&t='+type+'&d='+date+'&e='+earned+'&p='+possible,
             function(status) {
                 alert(status);
                 alert("The page will now reload");
@@ -172,7 +173,7 @@ jQuery(document).ready(function() {
             alert('Wrong or no data given');
         }
     });
-    jQuery.get('http://localhost:3000/get/graph',
+    jQuery.get('/get/graph',
     function(grade_list) {
         var grade = grade_list.split(',');
         var layout = new PlotKit.Layout("bar", {});
@@ -210,7 +211,7 @@ jQuery(document).ready(function() {
     var username = jQuery.cookie("username");
     jQuery('h1').append(username);
     jQuery('#clear_table').click(function() {
-        jQuery.get('http://localhost:3000/clear/table',
+        jQuery.get('/clear/table',
         function(response) {
             alert(response);
             window.location.reload();
@@ -219,7 +220,7 @@ jQuery(document).ready(function() {
     jQuery('#sign_in').click(function() {
         var username = prompt('Username');
         var password = prompt('Password');
-        jQuery.get('http://localhost:3000/signin?username='+username+'&password='+password,
+        jQuery.get('/signin?username='+username+'&password='+password,
         function(response) {
             if ( response != '' ) {
                 jQuery.cookie("username", response);
@@ -257,7 +258,7 @@ jQuery(document).ready(function() {
                     var earned = jQuery('#earned').val();
                     var possible = jQuery('#possible').val();
                     if ( assignment != '' && type != '' && date != '' && earned != '' && possible != '' ) {
-                        jQuery.get('http://localhost:3000/submit/assignment?a='+assignment+'&t='+type+'&d='+date+'&e='+earned+'&p='+possible,
+                        jQuery.get('/submit/assignment?a='+assignment+'&t='+type+'&d='+date+'&e='+earned+'&p='+possible,
                         function(status) {
                             window.location.reload();
                         });
