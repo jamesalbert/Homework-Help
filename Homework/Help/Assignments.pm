@@ -15,11 +15,11 @@ sub get_assignments {
     my @assignments;
     my $dbh     = DBI->connect( 'dbi:SQLite:dbname=schooldb' );
     my $records = $dbh->selectall_arrayref(
-        "select name, type, date, earned, possible, grade
-            from $opts{table};", { Slice => {} }
+        "select work, type, date, earned, possible, grade
+            from work where name=\"$opts{user}\";", { Slice => {} }
     );
     foreach my $attribute ( @{$records} ) {
-        push @assignments, $attribute->{name} . '[ITEMBREAK]';
+        push @assignments, $attribute->{work} . '[ITEMBREAK]';
         push @assignments, $attribute->{type} . '[ITEMBREAK]';
         push @assignments, $attribute->{date} . '[ITEMBREAK]';
         push @assignments, $attribute->{earned} . '[ITEMBREAK]';
@@ -31,12 +31,12 @@ sub get_assignments {
 }
 
 sub submit_assignment {
-    my ( $self, $table, $assignment, $type, $date, $earned, $possible ) = @_;
+    my ( $self, $name, $assignment, $type, $date, $earned, $possible ) = @_;
     my $dbh              = DBI->connect( 'dbi:SQLite:dbname=schooldb' );
     my $individual_grade = $earned / $possible;
     my $sth              = $dbh->prepare(
-        "insert into $table values (
-            null, \"$assignment\", \"$type\", \"$date\", \"$earned\", \"$possible\", \"$individual_grade\"
+        "insert into work values (
+            null, \"$name\", \"$assignment\", \"$type\", \"$date\", \"$earned\", \"$possible\", \"$individual_grade\"
         );"
     );
     $sth->execute;
@@ -45,9 +45,9 @@ sub submit_assignment {
 }
 
 sub clear_table {
-    my $self = shift;
+    my ( $self, %opts ) = @_;
     my $dbh  = DBI->connect( 'dbi:SQLite:dbname=schooldb' );
-    my $sth  = $dbh->prepare( "delete from assignments;" );
+    my $sth  = $dbh->prepare( "delete from work where name=\"$opts{user}\";" );
     $sth->execute;
     $dbh->disconnect;
     return "table destroyed";

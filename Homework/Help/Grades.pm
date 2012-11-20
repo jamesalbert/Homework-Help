@@ -30,7 +30,7 @@ sub get_grade {
     my $dbh             = DBI->connect( 'dbi:SQLite:dbname=schooldb' );
     my $earned_possible = $dbh->selectall_arrayref(
         "select earned, possible, type
-            from $opts{table};", { Slice => {} }
+            from work where name=\"$opts{user}\";", { Slice => {} }
     );
     foreach my $points ( @{$earned_possible} ) {
         $temp_grade = $points->{earned} / $points->{possible};
@@ -153,24 +153,24 @@ sub get_graph {
     ) = 0;
     my $dbh         = DBI->connect( 'dbi:SQLite:dbname=schooldb' );
     my $test_groups = $dbh->selectall_arrayref(
-        "select earned, possible from $opts{table}
-            where type=\"test\";", { Slice => {} }
+        "select earned, possible from work
+            where type=\"test\" and name=\"$opts{user}\";", { Slice => {} }
     );
     my $homework_groups = $dbh->selectall_arrayref(
-        "select earned, possible from $opts{table}
-            where type=\"homework\";", { Slice => {} }
+        "select earned, possible from work
+            where type=\"homework\" and name=\"$opts{user}\";", { Slice => {} }
     );
     my $quiz_groups = $dbh->selectall_arrayref(
-        "select earned, possible from $opts{table}
-            where type=\"quiz\";", { Slice => {} }
+        "select earned, possible from work
+            where type=\"quiz\" and name=\"$opts{user}\";", { Slice => {} }
     );
     my $project_groups = $dbh->selectall_arrayref(
-        "select earned, possible from $opts{table}
-            where type=\"project\";", { Slice => {} }
+        "select earned, possible from work
+            where type=\"project\" and name=\"$opts{user}\";", { Slice => {} }
     );
     my $extra_credit_groups = $dbh->selectall_arrayref(
-        "select earned, possible from $opts{table}
-            where type=\"extra credit\";", { Slice => {} }
+        "select earned, possible from work
+            where type=\"extra credit\" and name=\"$opts{user}\";", { Slice => {} }
     );
     foreach my $test ( @{$test_groups} ) {
         push @amount_of_tests, "$test->{earned}...$test->{possible}";

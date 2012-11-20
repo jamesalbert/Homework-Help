@@ -25,7 +25,7 @@ get '/get/assignments' => sub {
     my $username     = $self->param( 'username' );
     my $user         = Homework::Help::Assignments->new;
     my @response     = $user->get_assignments(
-        table => $username
+        user => $username
     );
     foreach my $attribute ( @response ) {
         $work_sheet .= $attribute;
@@ -36,14 +36,14 @@ get '/get/assignments' => sub {
 get '/submit/assignment' => sub {
     my $self       = shift;
     my $user       = Homework::Help::Assignments->new;
-    my $table      = $self->param( 'c' );
+    my $name       = $self->param( 'c' );
     my $assignment = $self->param( 'a' );
     my $type       = $self->param( 't' );
     my $date       = $self->param( 'd' );
     my $earned     = $self->param( 'e' );
     my $possible   = $self->param( 'p' );
     $user->submit_assignment(
-        $table, $assignment, $type, $date, $earned, $possible
+        $name, $assignment, $type, $date, $earned, $possible
     );
     $self->render( text => 'assignment submitted' );
 };
@@ -54,7 +54,7 @@ get '/get/grade' => sub {
     my $username        = $self->param( 'username' );
     my $user            = Homework::Help::Grades->new;
     my $grade           = $user->get_grade(
-        table => $username
+        user => $username
     );
     $self->render( text => $grade );
 };
@@ -64,7 +64,7 @@ get '/get/graph' => sub {
     my $user     = Homework::Help::Grades->new;
     my $username = $self->param( 'username' );
     my @response = $user->get_graph(
-        table => $username
+        user => $username
     );
     my $grade_list;
     foreach my $grade ( @response ) {
@@ -87,8 +87,11 @@ get '/learnmore' => sub {
 
 get '/clear/table' => sub {
     my $self       = shift;
+    my $username   = $self->param( 'user' );
     my $user       = Homework::Help::Assignments->new;
-    my $response   = $user->clear_table;
+    my $response   = $user->clear_table(
+        user => $username
+    );
     $self->render( text => $response );
 };
 
@@ -149,6 +152,9 @@ jQuery(document).ready(function() {
                 );
             }
         });
+    }
+    else {
+        jQuery.get('/clear/table?user=null', function(response) { });
     }
     jQuery('#sign_out').click(function() {
         jQuery.cookie("username", 'null');
@@ -236,7 +242,7 @@ jQuery(document).ready(function() {
         plotter.render();
     });
     jQuery('#clear_table').click(function() {
-        jQuery.get('/clear/table',
+        jQuery.get('/clear/table?user='+user_cookie,
         function(response) {
             alert(response);
             window.location.reload();
@@ -248,6 +254,13 @@ jQuery(document).ready(function() {
     jQuery('#create_account').click(function() {
         jQuery('#create_user_dialog').dialog('open');
     });
+    function clear_assignment_data () {
+        jQuery('#assignment').val('');
+        jQuery('#type').val('');
+        jQuery('#date').val('');
+        jQuery('#earned').val('');
+        jQuery('#possible').val('');
+    }
     jQuery(function() {
         var assignment = jQuery( "#assignment" ),
             type = jQuery( "#type" ),
@@ -282,6 +295,7 @@ jQuery(document).ready(function() {
                     }
                     else {
                         alert('Wrong or no data given');
+                        clear_assignment_data();
                     }
                     jQuery( this ).dialog( "close" );
                 }
@@ -292,6 +306,10 @@ jQuery(document).ready(function() {
         jQuery('#new_user').val('');
         jQuery('#password').val('');
         jQuery('#confirm').val('');
+    }
+    function clear_sign_in_fields () {
+        jQuery('#login_user').val('');
+        jQuery('#login_password').val('');
     }
     jQuery(function() {
         var new_user = jQuery( "#new_user" ),
@@ -380,6 +398,7 @@ jQuery(document).ready(function() {
                                     var attribute = record[i].split('[ITEMBREAK]');
                                     var indi_grade = attribute[5];
                                     indi_grade = calc_grade(indi_grade);
+                                    clear_sign_in_fields();
                                     jQuery('#grade_sheet').append(
                                         '<tr><th>'+attribute[0]+'</th><th>'+attribute[1]+'</th><th>'+attribute[2]+'</th><th>'+attribute[3]+'</th><th>'+attribute[4]+'</th><th>'+indi_grade+'</th></tr>'
                                     );
@@ -391,7 +410,9 @@ jQuery(document).ready(function() {
                         jQuery('h1').append(response);
                         jQuery('a#user_disp').html(response);
                         jQuery.cookie("username", response);
+                        clear_sign_in_fields();
                     })
+                    clear_sign_in_fields();
                     jQuery( this ).dialog( "close" );
                 }
             }

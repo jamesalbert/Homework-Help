@@ -1,0 +1,7 @@
+-users-
+
+create table users ( id integer primary key autoincrement, name varchar(255), password varchar(255), FOREIGN KEY(name) REFERENCES work(name) );
+
+-work-
+
+create table work ( id integer primary key autoincrement, name varchar(255), work varchar(255), type varchar(255), date varchar(255), earned varchar(255), possible varchar(255), grade varchar(255) );
