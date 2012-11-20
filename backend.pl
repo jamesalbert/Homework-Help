@@ -4,6 +4,9 @@ use strict;
 use warnings;
 use Mojolicious::Lite;
 use Homework::Help;
+use Homework::Help::Accounts;
+use Homework::Help::Assignments;
+use Homework::Help::Grades;
 
 get '/home' => sub {
     my $self = shift;
@@ -20,7 +23,7 @@ get '/get/assignments' => sub {
     my $self         = shift;
     my $work_sheet;
     my $username     = $self->param( 'username' );
-    my $user         = Homework::Help->new;
+    my $user         = Homework::Help::Assignments->new;
     my @response     = $user->get_assignments(
         table => $username
     );
@@ -32,7 +35,7 @@ get '/get/assignments' => sub {
 
 get '/submit/assignment' => sub {
     my $self       = shift;
-    my $user       = Homework::Help->new;
+    my $user       = Homework::Help::Assignments->new;
     my $table      = $self->param( 'c' );
     my $assignment = $self->param( 'a' );
     my $type       = $self->param( 't' );
@@ -49,7 +52,7 @@ get '/get/grade' => sub {
     my $self            = shift;
     my $total_points;
     my $username        = $self->param( 'username' );
-    my $user            = Homework::Help->new;
+    my $user            = Homework::Help::Grades->new;
     my $grade           = $user->get_grade(
         table => $username
     );
@@ -58,7 +61,7 @@ get '/get/grade' => sub {
 
 get '/get/graph' => sub {
     my $self     = shift;
-    my $user     = Homework::Help->new;
+    my $user     = Homework::Help::Grades->new;
     my $username = $self->param( 'username' );
     my @response = $user->get_graph(
         table => $username
@@ -84,7 +87,7 @@ get '/learnmore' => sub {
 
 get '/clear/table' => sub {
     my $self       = shift;
-    my $user       = Homework::Help->new;
+    my $user       = Homework::Help::Assignments->new;
     my $response   = $user->clear_table;
     $self->render( text => $response );
 };
@@ -93,7 +96,7 @@ get '/signin' => sub {
     my $self     = shift;
     my $username = $self->param( 'username' );
     my $password = $self->param( 'password' );
-    my $user     = Homework::Help->new;
+    my $user     = Homework::Help::Accounts->new;
     my $response = $user->get_user(
         user => $username,
         pass => $password
@@ -105,7 +108,7 @@ get '/create/user' => sub {
     my $self = shift;
     my $username = $self->param( 'user' );
     my $password = $self->param( 'pass' );
-    my $user     = Homework::Help->new;
+    my $user     = Homework::Help::Accounts->new;
     my $response = $user->create_account(
         username => $username,
         password => $password
