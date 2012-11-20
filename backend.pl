@@ -19,8 +19,11 @@ get '/homejs' => sub {
 get '/get/assignments' => sub {
     my $self         = shift;
     my $work_sheet;
+    my $username     = $self->param( 'username' );
     my $user         = Homework::Help->new;
-    my @response     = $user->get_assignments;
+    my @response     = $user->get_assignments(
+        table => $username
+    );
     foreach my $attribute ( @response ) {
         $work_sheet .= $attribute;
     }
@@ -30,29 +33,36 @@ get '/get/assignments' => sub {
 get '/submit/assignment' => sub {
     my $self       = shift;
     my $user       = Homework::Help->new;
+    my $table      = $self->param( 'c' );
     my $assignment = $self->param( 'a' );
     my $type       = $self->param( 't' );
     my $date       = $self->param( 'd' );
     my $earned     = $self->param( 'e' );
     my $possible   = $self->param( 'p' );
     $user->submit_assignment(
-        $assignment, $type, $date, $earned, $possible
+        $table, $assignment, $type, $date, $earned, $possible
     );
     $self->render( text => 'assignment submitted' );
 };
 
 get '/get/grade' => sub {
-    my $self           = shift;
+    my $self            = shift;
     my $total_points;
-    my $user           = Homework::Help->new;
-    my $grade          = $user->get_grade;
+    my $username        = $self->param( 'username' );
+    my $user            = Homework::Help->new;
+    my $grade           = $user->get_grade(
+        table => $username
+    );
     $self->render( text => $grade );
 };
 
 get '/get/graph' => sub {
     my $self     = shift;
     my $user     = Homework::Help->new;
-    my @response = $user->get_graph;
+    my $username = $self->param( 'username' );
+    my @response = $user->get_graph(
+        table => $username
+    );
     my $grade_list;
     foreach my $grade ( @response ) {
         $grade_list =~ s/((\d+)\.(\d\d))\d+/$1/
@@ -73,9 +83,9 @@ get '/learnmore' => sub {
 };
 
 get '/clear/table' => sub {
-    my $self     = shift;
-    my $user     = Homework::Help->new;
-    my $response = $user->clear_table;
+    my $self       = shift;
+    my $user       = Homework::Help->new;
+    my $response   = $user->clear_table;
     $self->render( text => $response );
 };
 
@@ -84,12 +94,27 @@ get '/signin' => sub {
     my $username = $self->param( 'username' );
     my $password = $self->param( 'password' );
     my $user     = Homework::Help->new;
-    my $response = $user->sign_in( $username, $password );
+    my $response = $user->get_user(
+        user => $username,
+        pass => $password
+    );
+    $self->render( text => $response );
+};
+
+get '/create/user' => sub {
+    my $self = shift;
+    my $username = $self->param( 'user' );
+    my $password = $self->param( 'pass' );
+    my $user     = Homework::Help->new;
+    my $response = $user->create_account(
+        username => $username,
+        password => $password
+    );
     $self->render( text => $response );
 };
 
 get '/contact' => sub {
-    my $self = shift;
+    my $self   = shift;
     $self->render( text => 'James Albert <james.albert72@gmail.com>' );
 };
 
@@ -100,38 +125,55 @@ __DATA__
 @@ homejs.html.ep
 
 jQuery(document).ready(function() {
-    jQuery('#add_assignment').focus();
-    jQuery.get('/get/assignments',
-    function(assignments) {
-        var record = assignments.split('[NEWITEM]');
-        var list_length = record.length;
-        for (var i = 0;i < list_length - 1;i++) {
-            var attribute = record[i].split('[ITEMBREAK]');
-            var indi_grade = attribute[5];
-            if (indi_grade > 1) {
-                indi_grade = "A++";
+    var user_cookie = jQuery.cookie("username");
+    jQuery('#sign_out').toggle();
+    if (user_cookie != 'null') {
+        jQuery('#sign_out').toggle();
+        jQuery('#create_account').toggle();
+        jQuery('#sign_in').toggle();
+        jQuery('h1').append(user_cookie);
+        jQuery('a#user_disp').html(user_cookie);
+        jQuery.get('/get/assignments?username='+user_cookie,
+        function(assignments) {
+            var record = assignments.split('[NEWITEM]');
+            var list_length = record.length;
+            for (var i = 0;i < list_length - 1;i++) {
+                var attribute = record[i].split('[ITEMBREAK]');
+                var indi_grade = attribute[5];
+                indi_grade = calc_grade(indi_grade);
+                jQuery('#grade_sheet').append(
+                    '<tr><th>'+attribute[0]+'</th><th>'+attribute[1]+'</th><th>'+attribute[2]+'</th><th>'+attribute[3]+'</th><th>'+attribute[4]+'</th><th>'+indi_grade+'</th></tr>'
+                );
             }
-            else if (indi_grade >= .90 && indi_grade <= 1) {
-                indi_grade = "A";
-            }
-            else if (indi_grade >= .80 && indi_grade < .90) {
-                indi_grade = "B";
-            }
-            else if (indi_grade >= .70 && indi_grade < .80) {
-                indi_grade = "C";
-            }
-            else if (indi_grade >= .60 && indi_grade < .70) {
-                indi_grade = "D";
-            }
-            else {
-                indi_grade = "F";
-            }
-            jQuery('#grade_sheet').append(
-                '<tr><th>'+attribute[0]+'</th><th>'+attribute[1]+'</th><th>'+attribute[2]+'</th><th>'+attribute[3]+'</th><th>'+attribute[4]+'</th><th>'+indi_grade+'</th></tr>'
-            );
-        }
+        });
+    }
+    jQuery('#sign_out').click(function() {
+        jQuery.cookie("username", 'null');
+        window.location.reload();
     });
-    jQuery.get('/get/grade',
+    function calc_grade (indi_grade) {
+        if (indi_grade > 1) {
+            indi_grade = "A++";
+        }
+        else if (indi_grade >= .90 && indi_grade <= 1) {
+            indi_grade = "A";
+        }
+        else if (indi_grade >= .80 && indi_grade < .90) {
+            indi_grade = "B";
+        }
+        else if (indi_grade >= .70 && indi_grade < .80) {
+            indi_grade = "C";
+        }
+        else if (indi_grade >= .60 && indi_grade < .70) {
+            indi_grade = "D";
+        }
+        else {
+            indi_grade = "F";
+        }
+        return indi_grade;
+    }
+    jQuery('#add_assignment').focus();
+    jQuery.get('/get/grade?username='+user_cookie,
     function(response) {
         var grade;
         if (response > 1.00) {
@@ -155,25 +197,7 @@ jQuery(document).ready(function() {
         jQuery('#grade').val(grade+' '+response+'%')
             .attr('disabled', 'disabled');
     });
-    jQuery('#submit_assignment').click(function() {
-        var assignment = jQuery('#assignment').val();
-        var type = jQuery('#type').val();
-        var date = jQuery('#date').val();
-        var earned = jQuery('#earned').val();
-        var possible = jQuery('#possible').val();
-        if ( assignment != '' && type != '' && date != '' && earned != '' && possible != '' ) {
-            jQuery.get('/submit/assignment?a='+assignment+'&t='+type+'&d='+date+'&e='+earned+'&p='+possible,
-            function(status) {
-                alert(status);
-                alert("The page will now reload");
-                window.location.reload();
-            });
-        }
-        else {
-            alert('Wrong or no data given');
-        }
-    });
-    jQuery.get('/get/graph',
+    jQuery.get('/get/graph?username='+user_cookie,
     function(grade_list) {
         var grade = grade_list.split(',');
         var layout = new PlotKit.Layout("bar", {});
@@ -208,8 +232,6 @@ jQuery(document).ready(function() {
         };
         plotter.render();
     });
-    var username = jQuery.cookie("username");
-    jQuery('h1').append(username);
     jQuery('#clear_table').click(function() {
         jQuery.get('/clear/table',
         function(response) {
@@ -218,19 +240,10 @@ jQuery(document).ready(function() {
         });
     });
     jQuery('#sign_in').click(function() {
-        var username = prompt('Username');
-        var password = prompt('Password');
-        jQuery.get('/signin?username='+username+'&password='+password,
-        function(response) {
-            if ( response != '' ) {
-                jQuery.cookie("username", response);
-                window.location.reload();
-            }
-            else {
-                jQuery.cookie("username", null);
-                window.location.reload();
-            }
-        });
+        jQuery('#sign_in_dialog').dialog('open');
+    });
+    jQuery('#create_account').click(function() {
+        jQuery('#create_user_dialog').dialog('open');
     });
     jQuery(function() {
         var assignment = jQuery( "#assignment" ),
@@ -252,13 +265,14 @@ jQuery(document).ready(function() {
             modal: true,
             buttons: {
                 "Submit Assignment": function() {
+                    var user_cookie = jQuery.cookie("username");
                     var assignment = jQuery('#assignment').val();
                     var type = jQuery('#type').val();
                     var date = jQuery('#date').val();
                     var earned = jQuery('#earned').val();
                     var possible = jQuery('#possible').val();
                     if ( assignment != '' && type != '' && date != '' && earned != '' && possible != '' ) {
-                        jQuery.get('/submit/assignment?a='+assignment+'&t='+type+'&d='+date+'&e='+earned+'&p='+possible,
+                        jQuery.get('/submit/assignment?c='+user_cookie+'&a='+assignment+'&t='+type+'&d='+date+'&e='+earned+'&p='+possible,
                         function(status) {
                             window.location.reload();
                         });
@@ -266,6 +280,115 @@ jQuery(document).ready(function() {
                     else {
                         alert('Wrong or no data given');
                     }
+                    jQuery( this ).dialog( "close" );
+                }
+            }
+        });
+    });
+    function clear_new_user_fields () {
+        jQuery('#new_user').val('');
+        jQuery('#password').val('');
+        jQuery('#confirm').val('');
+    }
+    jQuery(function() {
+        var new_user = jQuery( "#new_user" ),
+            pass = jQuery( "#password" ),
+            conf = jQuery( "#confirm" ),
+            allFields = jQuery( [] )
+                .add( new_user )
+                .add( pass )
+                .add( conf )
+            tips = jQuery( ".validateTips" );
+
+        jQuery( "#create_user_dialog" ).dialog({
+            autoOpen: false,
+            resizable: false,
+            modal: true,
+            buttons: {
+                "Create User": function() {
+                    var new_user = jQuery('#new_user').val();
+                    var pass = jQuery('#password').val();
+                    var conf = jQuery('#confirm').val();
+                    if ( new_user != '' && pass != '' && conf != '' ) {
+                        if ( pass == conf ) {
+                            jQuery.get('/create/user?user='+new_user+'&pass='+pass,
+                            function(status) {
+                                jQuery('#create_account').toggle();
+                            });
+                        }
+                        else {
+                            alert('passwords did not match');
+                            clear_new_user_fields();
+                        }
+                    }
+                    else {
+                        alert('Wrong or no data was given');
+                        clear_new_user_fields();
+                    }
+                    jQuery( this ).dialog( "close" );
+                }
+            }
+        });
+    });
+    jQuery(function() {
+        var login_user = jQuery( "#login_user" ),
+            login_pass = jQuery( "#login_password" ),
+            allFields = jQuery( [] )
+                .add( login_user )
+                .add( login_pass )
+            tips = jQuery( ".validateTips" );
+
+        jQuery( "#sign_in_dialog" ).dialog({
+            autoOpen: false,
+            resizable: false,
+            modal: true,
+            buttons: {
+                "Create User": function() {
+                    jQuery('#create_user_dialog').dialog('open');
+                    jQuery( this ).dialog( "close" );
+                },
+                "Sign In": function() {
+                    var login_user = jQuery( "#login_user" ).val();
+                    var login_pass = jQuery( "#login_password" ).val();
+                    jQuery.get('/signin?username='+login_user+'&password='+login_pass,
+                    function(response) {
+                        if ( response != '' ) {
+                                jQuery.get('/get/assignments?username='+response,
+                                function(assignments) {
+                                    var record = assignments.split('[NEWITEM]');
+                                    var list_length = record.length;
+                                    for (var i = 0;i < list_length - 1;i++) {
+                                        var attribute = record[i].split('[ITEMBREAK]');
+                                        var indi_grade = attribute[5];
+                                        indi_grade = calc_grade(indi_grade);
+                                        jQuery('#grade_sheet').append(
+                                            '<tr><th>'+attribute[0]+'</th><th>'+attribute[1]+'</th><th>'+attribute[2]+'</th><th>'+attribute[3]+'</th><th>'+attribute[4]+'</th><th>'+indi_grade+'</th></tr>'
+                                        );
+                                    }
+                                });
+                            window.location.reload();
+                        }
+                        else {
+                            jQuery.get('/get/assignments?username=none',
+                            function(assignments) {
+                                var record = assignments.split('[NEWITEM]');
+                                var list_length = record.length;
+                                for (var i = 0;i < list_length - 1;i++) {
+                                    var attribute = record[i].split('[ITEMBREAK]');
+                                    var indi_grade = attribute[5];
+                                    indi_grade = calc_grade(indi_grade);
+                                    jQuery('#grade_sheet').append(
+                                        '<tr><th>'+attribute[0]+'</th><th>'+attribute[1]+'</th><th>'+attribute[2]+'</th><th>'+attribute[3]+'</th><th>'+attribute[4]+'</th><th>'+indi_grade+'</th></tr>'
+                                    );
+                                }
+                            });
+                        };
+                        jQuery('#create_account').toggle();
+                        jQuery('#sign_in').toggle();
+                        jQuery('h1').append(response);
+                        jQuery('a#user_disp').html(response);
+                        jQuery.cookie("username", response);
+                    })
                     jQuery( this ).dialog( "close" );
                 }
             }
@@ -341,6 +464,34 @@ jQuery(document).ready(function() {
         </form>
     </div>
 
+    <div id="create_user_dialog" title="Create an Account">
+        <p class="validateTips">All form fields are required.</p>
+
+        <form>
+        <fieldset>
+            <label for="new_user">Username</label>
+            <input type="text" name="new_user" id="new_user" class="text ui-widget-content ui-corner-all" />
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all" />
+            <label for="confirm">Confirm Password</label>
+            <input type="password" name="confirm" id="confirm" value="" class="text ui-widget-content ui-corner-all" />
+        </fieldset>
+        </form>
+    </div>
+
+    <div id="sign_in_dialog" title="Sign In">
+        <p class="validateTips">All form fields are required.</p>
+
+        <form>
+        <fieldset>
+            <label for="login_user">Username</label>
+            <input type="text" name="login_user" id="login_user" class="text ui-widget-content ui-corner-all" />
+            <label for="login_password">Password</label>
+            <input type="password" name="login_password" id="login_password" value="" class="text ui-widget-content ui-corner-all" />
+        </fieldset>
+        </form>
+    </div>
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -352,11 +503,13 @@ jQuery(document).ready(function() {
           <a class="brand" href="/home">MojoVicious Grade Pro</a>
           <div class="nav-collapse collapse">
             <p class="navbar-text pull-right">
-              Logged in as <a href="#" id="user_disp" class="navbar-link">Username</a>
+              Logged in as <a href="#" id="user_disp" class="navbar-link">No one</a>
             </p>
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
               <li id="sign_in"><a href="#">Sign-In</a></li>
+              <li id="create_account"><a href="#">Create Account</a></li>
+              <li id="sign_out"><a href="#">Sign-Out</a></li>
               <li><a href="mailto:james.albert72@gmail.com" target="_blank">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -368,7 +521,7 @@ jQuery(document).ready(function() {
       <div class="row-fluid">
         <div class="span9">
           <div class="hero-unit">
-            <h1>Welcome User</h1>
+            <h1 id="big_heading">Welcome </h1>
             <p>to a simple grade checker written in perl created to prevent any late semester surprises.</p>
           </div>
           <div class="row-fluid">
